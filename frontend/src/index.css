@@ -1,0 +1,215 @@
+/* ── Base Typography ── */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* ── Keyframes ── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Critical global resets for Android WebView ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* Prevent font inflation on Android WebView */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Prevent iOS bounce */
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
+  /* Android WebView: smooth touch scrolling */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: none;
+}
+
+#root {
+  overflow-x: hidden;
+  /* Prevent horizontal bleed */
+  max-width: 100vw;
+}
+
+/* ── Safe area insets (notch + nav bar on Android) ── */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .bottom-nav,
+  [data-bottom-nav] {
+    padding-bottom: calc(env(safe-area-inset-bottom) + 8px);
+  }
+}
+
+/* ── Touch scrolling everywhere ── */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Tables always scroll horizontally ── */
+table {
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  white-space: nowrap;
+  max-width: 100%;
+  width: 100%;
+}
+
+/* ── Mobile-first responsive layer ── */
+@media (max-width: 768px) {
+
+  /* Minimum tap targets (WCAG / Android guidelines) */
+  button, a, [role="button"] {
+    min-height: 40px;
+    min-width: 40px;
+  }
+
+  /* Prevent iOS auto-zoom on input focus */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
+  /* ── Page-level layout ── */
+  /* All pages: remove desktop padding, add space for hamburger + bottom nav */
+  body {
+    padding-bottom: 68px; /* room for fixed bottom nav */
+  }
+
+  /* Sidebar replacement: hamburger + bottom nav already handled in Sidebar.js.
+     The main content area must NOT have left margin from an invisible sidebar. */
+  div[data-main-content] {
+    padding-top: 56px !important;   /* hamburger row height */
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    padding-bottom: 80px !important;
+    min-width: 0 !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+
+  /* ── Grid collapses ── */
+
+  /* 4-col → 2-col */
+  div[style*="repeat(4, 1fr)"],
+  div[style*="repeat(4,1fr)"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* 3-col → 1-col */
+  div[style*="repeat(3, 1fr)"],
+  div[style*="repeat(3,1fr)"],
+  div[style*="1fr 1fr 1fr"],
+  div[style*="\"1fr 1fr 1fr\""] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* 2-col → 1-col */
+  div[style*="1fr 1fr\""],
+  div[style*="'1fr 1fr'"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── Cards / panels ── */
+  div[style*="borderRadius"][style*="padding"] {
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  /* ── Typography scaling ── */
+  h1 { font-size: clamp(18px, 5vw, 24px) !important; }
+  h2 { font-size: clamp(16px, 4.5vw, 20px) !important; }
+  h3 { font-size: clamp(14px, 4vw, 18px) !important; }
+
+  /* Stat values that use very large font sizes */
+  [data-stat-value] {
+    font-size: clamp(20px, 6vw, 28px) !important;
+  }
+}
+
+/* Extra-small devices (360px — common Redmi/Samsung budget phones) */
+@media (max-width: 400px) {
+  body {
+    font-size: 13px;
+  }
+
+  /* Bottom nav text doesn't overflow */
+  [data-bottom-nav-label] {
+    font-size: 9px !important;
+  }
+
+  /* Very small cards: tighten padding */
+  div[style*="padding: '20px'"],
+  div[style*="padding:'20px'"] {
+    padding: 12px !important;
+  }
+}
+
+/* ── Additional Android WebView fixes ────────────────────── */
+
+/* FIX: Prevent 100vh overflow in Capacitor Android WebView.
+   Android Chrome/WebView counts the URL bar in 100vh; use
+   min-height + flex instead of height:100vh wherever possible. */
+.page-root {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+
+/* FIX: Consistent page padding for mobile — use on all page wrappers */
+@media (max-width: 768px) {
+  .mobile-page-content {
+    padding-top: 60px !important;         /* below fixed header / hamburger */
+    padding-left: max(12px, env(safe-area-inset-left)) !important;
+    padding-right: max(12px, env(safe-area-inset-right)) !important;
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)) !important; /* above bottom nav */
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+}
+
+/* FIX: Safe area on bottom nav — covers home-indicator bar on Android gesture nav */
+[data-bottom-nav] {
+  padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+  padding-left: env(safe-area-inset-left, 0px) !important;
+  padding-right: env(safe-area-inset-right, 0px) !important;
+}
+
+/* FIX: Loading spinner keyframe (used in PrivateRoute) */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* FIX: Prevent horizontal overflow on all cards */
+.card-mobile {
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* FIX: Capacitor keyboard — when keyboard open, bottom nav hides naturally with body resize */
+@media (max-height: 400px) {
+  [data-bottom-nav] {
+    display: none !important;
+  }
+}

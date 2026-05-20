@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#8b5cf6" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="LMS Trainer" />
+  <meta name="description" content="LMS Pro Trainer App" />
+  <link rel="apple-touch-icon" href="/logo192.png" />
+  <link rel="manifest" href="/app/trainer/manifest.json" />
+  <title>LMS Trainer</title>
+  <style>html,body{margin:0;padding:0;background:#0f1117;min-height:100%}</style>
+</head>
+<body>
+  <div id="lms-role" data-role="trainer"></div>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/app/trainer/sw.js', { scope: '/app/trainer/' })
+        .then(() => { window.location.replace('/trainer/login'); })
+        .catch(() => { window.location.replace('/trainer/login'); });
+    } else {
+      window.location.replace('/trainer/login');
+    }
+  </script>
+</body>
+</html>

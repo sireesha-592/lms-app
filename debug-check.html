@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head><title>LMS Debug Tool</title>
+<style>
+  body { font-family: monospace; padding: 20px; background: #111; color: #0f0; }
+  input, select { background: #222; color: #0f0; border: 1px solid #0f0; padding: 5px; margin: 4px; width: 300px; }
+  button { background: #0f0; color: #000; padding: 8px 16px; border: none; cursor: pointer; margin: 4px; font-weight: bold; }
+  pre { background: #222; padding: 10px; border: 1px solid #333; overflow: auto; max-height: 400px; white-space: pre-wrap; }
+  .section { margin: 20px 0; padding: 10px; border: 1px solid #0f0; }
+  .error { color: #f00; }
+  .ok { color: #0f0; }
+</style>
+</head>
+<body>
+<h2>🔍 LMS Debug Tool</h2>
+
+<div class="section">
+  <h3>Step 1: Login (get token)</h3>
+  <input id="email" placeholder="email e.g. sirisha@test.com" value="sirisha@test.com">
+  <input id="password" type="password" placeholder="password" value="test123">
+  <button onclick="doLogin()">Login</button>
+  <pre id="loginResult">-</pre>
+</div>
+
+<div class="section">
+  <h3>Step 2: Check DB state for a date</h3>
+  <input id="checkDate" placeholder="date e.g. 2026-05-14" value="2026-05-14">
+  <button onclick="checkDB()">Check DB</button>
+  <pre id="dbResult">-</pre>
+</div>
+
+<div class="section">
+  <h3>Step 3: Check Questions for date</h3>
+  <input id="qDate" placeholder="date" value="2026-05-14">
+  <input id="courseId" placeholder="courseId e.g. 69f644fd62d056e379ca8dc5" value="69f644fd62d056e379ca8dc5">
+  <button onclick="checkQuestions()">Check Questions</button>
+  <pre id="qResult">-</pre>
+</div>
+
+<div class="section">
+  <h3>Step 4: Test Save Answer directly</h3>
+  <input id="testQId" placeholder="questionId (from questions list above)">
+  <input id="testAnswer" placeholder="test answer text" value="This is a test answer">
+  <select id="testSection"><option>A</option><option>B</option><option>C</option></select>
+  <button onclick="testSave()">Test Save</button>
+  <pre id="saveResult">-</pre>
+</div>
+
+<script>
+let token = '';
+let userId = '';
+let courseIdVal = '';
+
+async function api(method, path, body) {
+  const opts = {
+    method,
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch('http://localhost:5000' + path, opts);
+  return res.json();
+}
+
+async function doLogin() {
+  const el = document.getElementById('loginResult');
+  try {
+    const data = await api('POST', '/api/auth/login', {
+      email: document.getElementById('email').value,
+      password: document.getElementById('password').value,
+    });
+    if (data.token) {
+      token = data.token;
+      userId = data.user._id;
+      courseIdVal = data.user.enrolledCourse;
+      el.className = 'ok';
+      el.textContent = `✅ Login OK!\nuserId: ${userId}\ncourse: ${courseIdVal}\nrole: ${data.user.role}`;
+      document.getElementById('courseId').value = courseIdVal || '';
+    } else {
+      el.className = 'error';
+      el.textContent = '❌ ' + JSON.stringify(data);
+    }
+  } catch(e) { el.className='error'; el.textContent = '❌ ' + e.message; }
+}
+
+async function checkDB() {
+  const el = document.getElementById('dbResult');
+  const date = document.getElementById('checkDate').value;
+  try {
+    const data = await api('GET', `/api/submissions/debug/${userId}/${date}`);
+    el.textContent = JSON.stringify(data, null, 2);
+    if (data.error) { el.className = 'error'; return; }
+    el.className = '';
+    
+    // Analysis
+    const analysis = [];
+    if (data.status === 'submitted') analysis.push('✅ Status: SUBMITTED');
+    else analysis.push('⏳ Status: ' + data.status);
+    
+    analysis.push(`SecA answered field: ${data.secA?.answered}`);
+    const hasAnswers = data.secA?.sampleAnswers?.some(a => a.isAnswered);
+    if (hasAnswers) analysis.push('✅ Has real answers in DB');
+    else analysis.push('❌ All answers appear empty in DB - answers were never saved!');
+    
+    el.textContent = analysis.join('\n') + '\n\n' + JSON.stringify(data, null, 2);
+  } catch(e) { el.className='error'; el.textContent = '❌ ' + e.message; }
+}
+
+async function checkQuestions() {
+  const el = document.getElementById('qResult');
+  const date = document.getElementById('qDate').value;
+  const cid  = document.getElementById('courseId').value;
+  try {
+    const data = await api('GET', `/api/questions/${cid}/${date}`);
+    if (!data.length) { el.className='error'; el.textContent='❌ NO QUESTIONS FOUND for this date/course!'; return; }
+    el.className='ok';
+    const firstId = data[0]._id;
+    document.getElementById('testQId').value = firstId;
+    el.textContent = `✅ ${data.length} questions found\nFirst Q _id: ${firstId}\n\n` + 
+      data.slice(0,5).map(q => `[${q.section}] ${q._id}: ${q.text?.substring(0,40)}`).join('\n');
+  } catch(e) { el.className='error'; el.textContent = '❌ ' + e.message; }
+}
+
+async function testSave() {
+  const el = document.getElementById('saveResult');
+  const date = document.getElementById('checkDate').value;
+  const questionId = document.getElementById('testQId').value;
+  const answerText = document.getElementById('testAnswer').value;
+  const section    = document.getElementById('testSection').value;
+  
+  el.textContent = 'Sending PATCH /answer...';
+  try {
+    const data = await api('PATCH', '/api/submissions/answer', {
+      traineeId: userId,
+      date,
+      section,
+      questionId,
+      answerText,
+      marks: section === 'A' ? 1 : section === 'B' ? 3 : 5,
+    });
+    
+    if (data.message) {
+      el.className = 'error';
+      el.textContent = '❌ Error: ' + data.message;
+    } else {
+      el.className = 'ok';
+      const secKey = `sec${section}`;
+      el.textContent = `✅ SAVED OK!\nanswered: ${data[secKey]?.answered}\nscore: ${data[secKey]?.score}\n\n` + JSON.stringify(data[secKey]?.answers?.slice(0,2), null, 2);
+    }
+  } catch(e) { el.className='error'; el.textContent = '❌ ' + e.message; }
+}
+</script>
+</body>
+</html>

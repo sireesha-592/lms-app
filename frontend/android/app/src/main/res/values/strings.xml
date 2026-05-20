@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">CodeMedha</string>
+    <string name="title_activity_main">CodeMedha</string>
+    <string name="package_name">com.codemedha.lms</string>
+    <string name="custom_url_scheme">com.codemedha.lms</string>
+</resources>

@@ -1,0 +1,17 @@
+{
+  "short_name": "LMS Trainee",
+  "name": "LMS Pro - Trainee",
+  "icons": [
+    { "src": "/favicon.ico", "sizes": "64x64 32x32 24x24 16x16", "type": "image/x-icon" },
+    { "src": "/logo192.png", "type": "image/png", "sizes": "192x192", "purpose": "any maskable" },
+    { "src": "/logo512.png", "type": "image/png", "sizes": "512x512", "purpose": "any maskable" }
+  ],
+  "start_url": "/app/student/",
+  "scope": "/app/student/",
+  "display": "standalone",
+  "theme_color": "#00d4aa",
+  "background_color": "#0f1117",
+  "description": "LMS Pro Trainee App",
+  "orientation": "any",
+  "prefer_related_applications": false
+}

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    height: 100vh; font-family: system-ui, sans-serif;
+    color: white; user-select: none;
+    -webkit-app-region: drag;
+  }
+  .icon { font-size: 72px; margin-bottom: 16px; animation: pulse 1.5s infinite; }
+  h1   { font-size: 28px; font-weight: 700; letter-spacing: 1px; }
+  p    { font-size: 14px; opacity: .7; margin-top: 6px; }
+  .bar  { width: 200px; height: 4px; background: rgba(255,255,255,.2);
+          border-radius: 2px; margin-top: 32px; overflow: hidden; }
+  .fill { height: 100%; background: white; border-radius: 2px;
+          animation: load 3s ease-in-out forwards; }
+  @keyframes load  { from{width:0} to{width:100%} }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+</style>
+</head>
+<body>
+  <div class="icon">👨‍💻</div>
+  <h1>LMS Trainer Panel</h1>
+  <p>Starting application…</p>
+  <div class="bar"><div class="fill"></div></div>
+</body>
+</html>

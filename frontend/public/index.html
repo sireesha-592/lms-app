@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+
+    <!-- Viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+    <!-- PWA Theme -->
+    <meta name="theme-color" content="#00d4aa" />
+    <meta name="background-color" content="#0f1117" />
+
+    <!-- PWA Install support -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="LMS Pro" />
+
+    <!-- SEO / Description -->
+    <meta name="description" content="LMS Pro — Track attendance, assignments and learning progress" />
+    <meta name="application-name" content="LMS Pro" />
+
+    <!-- Apple splash screens (optional but nice) -->
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="apple-touch-startup-image" href="%PUBLIC_URL%/logo512.png" />
+
+    <!-- Manifest -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+
+    <title>LMS Pro</title>
+
+    <!-- jsPDF for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Prevent flash of white on dark-mode devices -->
+    <style>
+      html, body, #root { margin: 0; padding: 0; background: #0f1117; min-height: 100%; }
+    </style>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#00d4aa" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="LMS Trainee" />
+  <meta name="description" content="LMS Pro Trainee App" />
+  <link rel="apple-touch-icon" href="/logo192.png" />
+  <link rel="manifest" href="/app/student/manifest.json" />
+  <title>LMS Trainee</title>
+  <style>html,body{margin:0;padding:0;background:#0f1117;min-height:100%}</style>
+</head>
+<body>
+  <div id="lms-role" data-role="student"></div>
+  <script>
+    // Register role-specific SW then redirect to React app
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/app/student/sw.js', { scope: '/app/student/' })
+        .then(() => { window.location.replace('/student/login'); })
+        .catch(() => { window.location.replace('/student/login'); });
+    } else {
+      window.location.replace('/student/login');
+    }
+  </script>
+</body>
+</html>
