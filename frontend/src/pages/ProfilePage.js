@@ -2,6 +2,7 @@ import Sidebar from '../components/Sidebar';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import PageHeader from '../components/PageHeader';
 import { useTheme } from '../context/ThemeContext';
 import api from '../api';
 
@@ -131,9 +132,10 @@ const ProfilePage = () => {
   return (
     <div style={{ display: 'flex', minHeight: '100vh', overflowX: 'hidden', background: theme.pageBg, color: theme.textPrimary, fontFamily: "'DM Sans', 'Segoe UI', sans-serif" }}>
       {/* Sidebar */}
+      <PageHeader />
       <Sidebar activePath="/profile" courseId={user&&user.enrolledCourse} />
 
-      <main style={{ flex: 1, minWidth: 0, overflow: "hidden", padding: isMobile ? '16px 14px 80px' : '32px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <main style={{ flex: 1, minWidth: 0, overflow: "hidden", marginLeft: isMobile ? 0 : 240, padding: isMobile ? '16px 14px 80px' : '32px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
         {/* Hero */}
         <div style={{ background: theme.cardBg, border: `1px solid ${theme.border}`, borderRadius: 20, padding: isMobile ? '18px 16px' : '28px', position: 'relative', overflow: 'hidden', display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', flexWrap: 'wrap', gap: 12 }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: `radial-gradient(circle at 20% 50%, ${theme.accent}0a 0%, transparent 60%)`, pointerEvents: 'none' }}></div>

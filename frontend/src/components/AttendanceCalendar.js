@@ -52,7 +52,8 @@ export default function AttendanceCalendar({ courseId: courseIdProp }) {
   };
 
   useEffect(() => {
-    if (courseId) { loadMonthData(); loadBackendStats(); }
+    loadBackendStats(); // stats only need token — no courseId required
+    if (courseId) { loadMonthData(); }
   }, [currentMonth, currentYear, courseId]);
 
   useEffect(() => {
@@ -102,52 +103,67 @@ export default function AttendanceCalendar({ courseId: courseIdProp }) {
   const loadMonthData = async () => {
     try {
       setLoading(true);
-      const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
-      const result    = {};
+      const totalDays  = new Date(currentYear, currentMonth + 1, 0).getDate();
+      const todayMid   = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const userId     = user._id || user.id;
+      const mm         = String(currentMonth + 1).padStart(2, '0');
 
-      await Promise.all(
-        Array.from({ length: totalDays }, (_, i) => i + 1).map(async (day) => {
-          const dateStr = formatDate(day);
+      // ── BATCH: 3 calls for the whole month ──
+      // Uses existing routes — filter by month prefix in frontend
+      const [attRes, subRes, clsRes] = await Promise.allSettled([
+        api.get(`/api/attendance/${userId}`),           // all records for student
+        api.get(`/api/submissions/all`),                // all submissions for student  
+        api.get(`/api/classes/all?year=${currentYear}&month=${mm}`), // all classes for month
+      ]);
 
-          if (isSunday(dateStr)) {
-            result[dateStr] = { status: 'sunday', att: [], sub: null, cls: null };
-            return;
-          }
+      const prefix = `${currentYear}-${mm}`;
 
-          const cellDate    = new Date(dateStr + 'T00:00:00');
-          const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-          if (cellDate > todayMidnight) {
-            result[dateStr] = { status: 'future', att: [], sub: null, cls: null };
-            return;
-          }
+      // Filter to current month only
+      const allAtt  = attRes.status  === 'fulfilled' ? toArray(attRes.value.data)  : [];
+      const allSubs = subRes.status  === 'fulfilled' ? (Array.isArray(subRes.value.data)  ? subRes.value.data  : []) : [];
+      const allCls  = clsRes.status  === 'fulfilled' ? (Array.isArray(clsRes.value.data)  ? clsRes.value.data  : []) : [];
 
-          try {
-            const [attRes, subRes, clsRes] = await Promise.all([
-              api.get(`/api/attendance/${user._id}/${dateStr}`),
-              api.get(`/api/submissions/${user._id}/${dateStr}`),
-              api.get(`/api/classes/date/${courseId}/${dateStr}`),
-            ]);
+      const attList = allAtt.filter(a => a.date && a.date.startsWith(prefix));
+      const subList = allSubs.filter(s => s.date && s.date.startsWith(prefix));
+      const clsList = allCls.filter(c => {
+        const d = (c.date || '').split('T')[0];
+        return d.startsWith(prefix);
+      });
 
-            // ── KEY FIX: always normalize to array ──
-            const att = toArray(attRes.data);
-            const sub = subRes.data;
-            const cls = clsRes.data;
+      // Build lookup maps
+      const attMap = {};
+      attList.forEach(a => { attMap[a.date] = attMap[a.date] ? [...attMap[a.date], a] : [a]; });
+      const subMap = {};
+      subList.forEach(s => { subMap[s.date] = s; });
+      const clsMap = {};
+      clsList.forEach(c => { const d = (c.date || '').split('T')[0]; clsMap[d] = c; });
 
-            let status = 'none';
-            if (att.length > 0) {
-              const present = att.some(a => a.status === 'present');
-              if (!present) {
-                status = 'absent';
-              } else {
-                status = (sub && sub.status === 'submitted') ? 'complete' : 'pending';
-              }
-            }
-            result[dateStr] = { status, att, sub, cls };
-          } catch {
-            result[dateStr] = { status: 'none', att: [], sub: null, cls: null };
-          }
-        })
-      );
+      const result = {};
+      for (let day = 1; day <= totalDays; day++) {
+        const dateStr  = formatDate(day);
+        const cellDate = new Date(dateStr + 'T00:00:00');
+
+        if (isSunday(dateStr)) {
+          result[dateStr] = { status: 'sunday', att: [], sub: null, cls: null };
+          continue;
+        }
+        if (cellDate > todayMid) {
+          result[dateStr] = { status: 'future', att: [], sub: null, cls: null };
+          continue;
+        }
+
+        const att = attMap[dateStr] || [];
+        const sub = subMap[dateStr] || null;
+        const cls = clsMap[dateStr] || null;
+
+        let status = 'none';
+        if (att.length > 0) {
+          const present = att.some(a => a.status === 'present');
+          status = !present ? 'absent' : (sub && sub.status === 'submitted') ? 'complete' : 'pending';
+        }
+        result[dateStr] = { status, att, sub, cls };
+      }
+
       setDateData(result);
     } catch (err) {
       console.error(err);
@@ -267,9 +283,14 @@ export default function AttendanceCalendar({ courseId: courseIdProp }) {
             </div>
             <div style={pill(classColor)}>{classLabel}</div>
           </div>
-          {att.length > 0 && (
+          {(att.length > 0 || cls) && (
             <>
               <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600, letterSpacing: 1, marginBottom: 7 }}>ASSIGNMENT PROGRESS</div>
+              {att.length === 0 && cls && (
+                <div style={{ fontSize: 10, color: '#f59e0b', textAlign: 'center', marginBottom: 8, fontStyle: 'italic' }}>
+                  {isHovToday ? '📋 Attendance not marked yet' : isHovPast ? '📋 No attendance record' : '📋 Upcoming class'}
+                </div>
+              )}
               {[
                 { label: 'Easy',   answered: secAAnswered, total: secATotal, color: '#10b981' },
                 { label: 'Medium', answered: secBAnswered, total: secBTotal, color: '#f59e0b' },
@@ -285,9 +306,13 @@ export default function AttendanceCalendar({ courseId: courseIdProp }) {
                   </div>
                 </div>
               ))}
-              {sub && (
+              {sub ? (
                 <div style={{ marginTop: 8, fontSize: 11, fontWeight: 600, color: sub.status === 'submitted' ? '#10b981' : '#f59e0b', textAlign: 'center' }}>
                   {sub.status === 'submitted' ? '✅ Assignment Submitted' : '⏳ Assignment Pending'}
+                </div>
+              ) : cls && (
+                <div style={{ marginTop: 8, fontSize: 11, fontWeight: 600, color: '#f59e0b', textAlign: 'center' }}>
+                  ⏳ Assignment Pending
                 </div>
               )}
             </>

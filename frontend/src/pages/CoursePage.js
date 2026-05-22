@@ -2,6 +2,7 @@ import Sidebar from '../components/Sidebar';
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
+import PageHeader from '../components/PageHeader';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 
@@ -217,9 +218,10 @@ export default function CoursePage() {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: theme.pageBg, fontFamily: "'DM Sans', 'Segoe UI', sans-serif", overflowX: 'hidden' }}>
+      <PageHeader />
       <Sidebar activePath="/courses" courseId={user&&user.enrolledCourse} />
       {/* Main */}
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', padding: isMobile ? '60px 12px 80px' : '24px', overflowY: 'auto', overflowX: 'hidden', background: theme.pageBg, boxSizing: 'border-box' }}>
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', marginLeft: isMobile ? 0 : 240, padding: isMobile ? '64px 12px 80px' : '24px', overflowY: 'auto', overflowX: 'hidden', background: theme.pageBg, boxSizing: 'border-box' }}>
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: isMobile ? 'wrap' : 'nowrap', gap: isMobile ? 8 : 0 }}>
           <h2 style={{ color: theme.textPrimary, fontSize: 22, fontWeight: 700, margin: 0 }}>📺 Today's Class</h2>

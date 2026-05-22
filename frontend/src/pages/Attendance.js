@@ -2,6 +2,7 @@ import Sidebar from '../components/Sidebar';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AttendanceCalendar from '../components/AttendanceCalendar';
+import PageHeader from '../components/PageHeader';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import api from '../api';
@@ -47,6 +48,7 @@ export default function Attendance() {
       fontFamily: "'DM Sans', 'Segoe UI', sans-serif",
       overflowX: 'hidden',
     }}>
+      <PageHeader />
       <Sidebar activePath="/attendance" courseId={resolvedCourseId} />
 
       <div style={{
@@ -54,7 +56,8 @@ export default function Attendance() {
         minWidth: 0,
         display: 'flex',
         flexDirection: 'column',
-        padding: isMobile ? '60px 12px 80px' : '28px 28px 20px',
+        marginLeft: isMobile ? 0 : 240,
+        padding: isMobile ? '64px 12px 80px' : '28px 28px 20px',
         background: theme.pageBg,
         overflowX: 'hidden',
         boxSizing: 'border-box',

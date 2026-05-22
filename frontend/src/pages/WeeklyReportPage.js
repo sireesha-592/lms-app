@@ -2,6 +2,7 @@ import Sidebar from '../components/Sidebar';
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import PageHeader from '../components/PageHeader';
 import { useTheme } from '../context/ThemeContext';
 import api from '../api';
 
@@ -77,9 +78,10 @@ const WeeklyReportPage = () => {
   return (
     <div style={{display:'flex',minHeight:'100vh',background:C.bg,color:C.text,fontFamily:"'DM Sans','Segoe UI',sans-serif"}}>
       {/* Sidebar */}
+      <PageHeader />
       <Sidebar activePath="/weekly-report" courseId={user&&user.enrolledCourse} />
       {/* Main */}
-      <main style={{flex: 1, minWidth: 0, padding: isMobile ? '60px 12px 80px' : '32px', overflowY:'auto', overflowX:'hidden', boxSizing:'border-box'}}>
+      <main style={{flex: 1, minWidth: 0, marginLeft: isMobile ? 0 : 240, marginTop: 64, padding: isMobile ? '0 12px 80px' : '32px', overflowY:'auto', overflowX:'hidden', boxSizing:'border-box'}}>
         {/* Header */}
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:28, flexWrap: isMobile ? 'wrap' : 'nowrap', gap: isMobile ? 8 : 0}}>
           <div>

@@ -9,7 +9,16 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  // Use role-specific token based on current URL — prevents cross-role token pollution
+  const path = window.location.hash || window.location.pathname;
+  let token;
+  if (path.includes('/admin')) {
+    token = localStorage.getItem('lms_token_admin') || localStorage.getItem('token');
+  } else if (path.includes('/trainer')) {
+    token = localStorage.getItem('lms_token_trainer') || localStorage.getItem('token');
+  } else {
+    token = localStorage.getItem('lms_token_student') || localStorage.getItem('token');
+  }
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });

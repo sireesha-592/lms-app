@@ -5,6 +5,7 @@ import { API_BASE as API } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import CodeEditor from '../components/CodeEditor';
+import Sidebar from '../components/Sidebar';
 
 export default function AssignmentPage() {
   const { date } = useParams();
@@ -323,7 +324,9 @@ export default function AssignmentPage() {
   );
 
   return (
-    <div style={{ display:'flex', flexDirection:'column', minHeight:'100vh', background: theme.pageBg, overflowX:'hidden', fontFamily:"'DM Sans','Segoe UI',sans-serif" }}>
+    <>
+      <Sidebar activePath="/assignments" />
+      <div style={{ marginLeft: window.innerWidth < 768 ? 0 : 240, display:'flex', flexDirection:'column', minHeight:'100vh', background: theme.pageBg, overflowX:'hidden', fontFamily:"'DM Sans','Segoe UI',sans-serif" }}>
 
       {/* Toast Stack */}
       <div style={{ position:'fixed', top:16, right:16, zIndex:9999, display:'flex', flexDirection:'column', gap:8, maxWidth:360 }}>
@@ -337,7 +340,7 @@ export default function AssignmentPage() {
 
       {/* Header */}
       <div style={{ display:'flex', alignItems:'center', gap:16, padding: window.innerWidth < 768 ? '56px 12px 12px' : '16px 24px', background: isDark?'#1a2740':'#1e3a5f', flexShrink:0, flexWrap:'wrap' }}>
-        <button style={{ background:'rgba(255,255,255,0.15)', border:'none', color:'#fff', padding:'8px 14px', borderRadius:8, cursor:'pointer', fontSize:14 }} onClick={() => navigate(-1)}>← Back</button>
+        <button style={{ background:'rgba(255,255,255,0.15)', border:'1.5px solid rgba(255,255,255,0.2)', color:'#fff', padding:'7px 14px', borderRadius:10, cursor:'pointer', fontSize:13, fontWeight:600 }} onClick={() => navigate('/attendance')}>← Back</button>
         <div>
           <h2 style={{ color:'#fff', fontSize:18, fontWeight:700, margin:0 }}>Assignment — {date}</h2>
           <p style={{ color:'#a0b4c8', fontSize:12, margin:'2px 0 0 0' }}>MERN Stack Developer Course</p>
@@ -606,5 +609,6 @@ export default function AssignmentPage() {
         @keyframes slideIn { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
       `}</style>
     </div>
+    </>
   );
 }

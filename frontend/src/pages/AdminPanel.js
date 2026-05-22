@@ -683,44 +683,70 @@ export default function AdminPanel() {
   ];
 
   return (
-    <div style={S.appWrapper}>
-      <Navbar />
-      {/* ── SIDEBAR ─────────────────────────────────────────── */}
-      <aside style={{ ...S.sidebar, background: T.sidebar }}>
-        
-        <nav style={{ flex: 1, padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <div style={{ display:'flex', minHeight:'100vh', fontFamily:"'DM Sans','Segoe UI',sans-serif", background: T.bg, color: T.text }}>
+      <style>{`.ap-nav:hover{background:rgba(0,212,170,0.08)!important;color:#00d4aa!important}aside::-webkit-scrollbar{display:none}`}</style>
+
+      {/* ── SIDEBAR ── */}
+      <aside style={{ width:240, background:'#0d1118', display:'flex', flexDirection:'column', position:'fixed', top:0, left:0, height:'100vh', overflowY:'auto', overflowX:'hidden', zIndex:200, scrollbarWidth:'none', borderRight:'1px solid #1e2535' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:10, padding:'20px 18px 16px', borderBottom:'1px solid #1e2535' }}>
+          <div style={{ width:34, height:34, borderRadius:10, background:'linear-gradient(135deg,#00d4aa,#7c6af5)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:16, fontWeight:800, color:'#fff', flexShrink:0 }}>C</div>
+          <div>
+            <div style={{ color:'#fff', fontWeight:800, fontSize:15 }}>CodeMedha</div>
+            <div style={{ color:'#00d4aa', fontSize:10, fontWeight:700, textTransform:'uppercase', letterSpacing:1.2 }}>Admin Portal</div>
+          </div>
+        </div>
+        <div style={{ margin:'12px 10px', background:'rgba(0,212,170,0.06)', borderRadius:12, padding:'14px', textAlign:'center', border:'1px solid rgba(0,212,170,0.12)' }}>
+          <div style={{ width:48, height:48, borderRadius:'50%', background:'linear-gradient(135deg,#ef4444,#f59e0b)', color:'#fff', fontWeight:800, fontSize:20, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 8px' }}>
+            {(user?.name||'A')[0].toUpperCase()}
+          </div>
+          <div style={{ color:'#fff', fontWeight:700, fontSize:13, marginBottom:4 }}>{user?.name||'Admin'}</div>
+          <div style={{ display:'inline-block', background:'rgba(239,68,68,0.15)', color:'#fca5a5', fontSize:10, fontWeight:700, padding:'3px 10px', borderRadius:20 }}>👑 Admin</div>
+        </div>
+        <nav style={{ flex:1, padding:'4px 8px' }}>
           {adminTabs.map(t => (
-            <button
-              key={t.key}
-              style={{ ...S.navBtn, ...(tab === t.key ? S.navBtnActive : {}) }}
-              onClick={() => setTab(t.key)}
-            >
+            <button key={t.key} className="ap-nav"
+              style={{ width:'100%', padding:'10px 12px', background: tab===t.key ? 'rgba(0,212,170,0.1)' : 'none', border:'none', borderLeft: tab===t.key ? '3px solid #00d4aa' : '3px solid transparent', color: tab===t.key ? '#00d4aa' : '#555', textAlign:'left', cursor:'pointer', fontSize:13, fontWeight: tab===t.key ? 700 : 500, display:'flex', alignItems:'center', gap:8, transition:'all 0.15s', borderRadius:'0 8px 8px 0' }}
+              onClick={() => setTab(t.key)}>
               {t.label}
+              {tab===t.key && <span style={{ marginLeft:'auto', width:5, height:5, borderRadius:'50%', background:'#00d4aa' }} />}
             </button>
           ))}
         </nav>
-        {/* Theme toggle */}
-        <div style={{ padding: '14px', borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: 'auto' }}>
-          <button onClick={toggleTheme} style={{
-            width: '100%', padding: '10px', borderRadius: 10,
-            border: '1px solid rgba(255,255,255,0.15)',
-            background: 'rgba(255,255,255,0.07)',
-            color: '#ccc', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-          }}>
+        <div style={{ padding:'14px', borderTop:'1px solid #1e2535' }}>
+          <button onClick={toggleTheme} style={{ width:'100%', padding:'10px', borderRadius:10, border:'1px solid #1e2535', background:'rgba(255,255,255,0.04)', color:'#555', fontSize:13, fontWeight:600, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
             {isDark ? '☀️ Light Mode' : '🌙 Dark Mode'}
           </button>
         </div>
       </aside>
 
-      {/* ── MAIN CONTENT ────────────────────────────────────── */}
-      <div style={{ ...S.page, background: T.bg, color: T.text }}>
-      <div style={S.header}>
-        <div>
-          <h2 style={{ ...S.title, color: T.text }}>🛠 Admin Panel</h2>
-          <p style={{ ...S.sub, color: T.textMuted }}>MERN Stack Developer Course Management</p>
+      {/* ── FIXED HEADER ── */}
+      <div style={{ position:'fixed', top:0, left:240, right:0, zIndex:150, background: isDark ? '#0d1118' : '#ffffff', borderBottom:`1px solid ${isDark ? '#1e2535' : '#e2e8f0'}`, boxShadow: isDark ? '0 1px 12px rgba(0,0,0,0.4)' : '0 1px 8px rgba(0,0,0,0.06)', padding:'0 24px', height:64, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+          {tab !== 'dashboard' && (
+            <button onClick={() => setTab('dashboard')} style={{ display:'flex', alignItems:'center', gap:6, padding:'7px 14px', borderRadius:10, border:`1.5px solid ${isDark ? '#1e2535' : '#e2e8f0'}`, background: isDark ? '#1e2535' : '#f0f4f8', color: isDark ? '#94a3b8' : '#64748b', cursor:'pointer', fontSize:13, fontWeight:600 }}>
+              ← Back
+            </button>
+          )}
+          <div>
+            <div style={{ fontSize:15, fontWeight:700, color: isDark ? '#fff' : '#1a1a2e', display:'flex', alignItems:'center', gap:8 }}>
+              🛠 {adminTabs.find(t=>t.key===tab)?.label?.replace(/^[^\s]+\s/,'') || 'Admin Panel'}
+            </div>
+            <div style={{ fontSize:11, color: isDark ? '#555' : '#94a3b8', marginTop:1 }}>CodeMedha — Course Management</div>
+          </div>
+        </div>
+        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+          <div style={{ fontSize:12, color: isDark ? '#555' : '#94a3b8', fontWeight:600, background: isDark ? '#1e2535' : '#f0f4f8', padding:'6px 14px', borderRadius:20, border:`1px solid ${isDark ? '#1e2535' : '#e2e8f0'}` }}>
+            📅 {new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}
+          </div>
+          <div style={{ width:36, height:36, borderRadius:'50%', background:'linear-gradient(135deg,#ef4444,#f59e0b)', color:'#fff', fontWeight:700, fontSize:15, display:'flex', alignItems:'center', justifyContent:'center' }}>
+            {(user?.name||'A')[0].toUpperCase()}
+          </div>
         </div>
       </div>
+
+      {/* ── MAIN CONTENT ── */}
+      <div style={{ flex:1, marginLeft:240, marginTop:64, padding:28, background: T.bg, color: T.text, minHeight:'calc(100vh - 64px)', overflowY:'auto' }}>
+
 
       <div style={{ ...S.topRow, background: T.card, border: `1px solid ${T.border}`, display: tab === 'dashboard' ? 'none' : 'flex' }}>
         <div style={S.field}><label style={{ ...S.label, color: T.textMuted }}>Course ID</label>
@@ -2110,15 +2136,15 @@ function AdminGroupChat({ user, token }) {
 //  STYLES
 // ════════════════════════════════════════════════════════════
 const S = {
-  appWrapper:    { display: 'flex', minHeight: '100vh', fontFamily: "'DM Sans','Segoe UI',sans-serif", paddingTop: 56, overflowX: 'hidden' },
-  sidebar:       { width: 230, display: 'flex', flexDirection: 'column', padding: '24px 0', flexShrink: 0 },
+  appWrapper:    { display: 'flex', minHeight: '100vh', fontFamily: "'DM Sans','Segoe UI',sans-serif", overflowX: 'hidden' },
+  sidebar:       { width: 240, display: 'flex', flexDirection: 'column', padding: '24px 0', flexShrink: 0 },
   sidebarHeader: { display: 'flex', alignItems: 'center', gap: 12, padding: '0 20px 24px', borderBottom: '1px solid rgba(255,255,255,0.1)', marginBottom: 8 },
   sidebarName:   { color: '#fff', fontWeight: 700, fontSize: 14 },
   sidebarRole:   { color: '#93c5fd', fontSize: 11, marginTop: 2, background: 'rgba(147,197,253,0.15)', padding: '2px 8px', borderRadius: 20, display: 'inline-block', fontWeight: 600 },
   avatarCircle:  { width: 42, height: 42, borderRadius: '50%', background: 'linear-gradient(135deg,#ef4444,#f59e0b)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: 18, flexShrink: 0 },
   navBtn:        { width: '100%', padding: '11px 14px 11px 20px', background: 'none', border: 'none', borderLeft: '3px solid transparent', color: 'rgba(255,255,255,0.5)', textAlign: 'left', cursor: 'pointer', fontSize: 13.5, transition: 'all 0.15s', display: 'flex', alignItems: 'center', gap: 8 },
   navBtnActive:  { background: 'rgba(255,255,255,0.1)', color: '#fff', borderLeft: '3px solid #60a5fa' },
-  page:          { flex: 1, minHeight: '100vh', padding: 28, paddingTop: 84, overflowY: 'auto' },
+  page:          { flex: 1, minHeight: '100vh', padding: 28, paddingTop: 28, overflowY: 'auto' },
   header:        { marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
   title:         { fontSize: 22, fontWeight: 800, margin: 0 },
   sub:           { fontSize: 13, margin: '4px 0 0 0' },

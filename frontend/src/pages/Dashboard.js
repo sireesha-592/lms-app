@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import api from '../api';
-import Navbar from '../components/Navbar';
+import PageHeader from '../components/PageHeader';
 import Sidebar from '../components/Sidebar';
 
 const API = 'https://codemedha-production-47c1.up.railway.app';
@@ -149,7 +149,7 @@ const Dashboard = () => {
     userAvatar: { width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg, #00d4aa, #7c6af5)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, flexShrink: 0, color: '#fff' },
     userName: { fontSize: 13, fontWeight: 600, color: theme.textPrimary },
     userRole: { fontSize: 11, color: theme.textMuted, marginTop: 2 },
-    main: { flex: 1, minWidth: 0, overflow: "hidden", padding: isMobile ? '60px 12px 80px' : '32px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 24, maxWidth: '100%', boxSizing: 'border-box' },
+    main: { flex: 1, minWidth: 0, overflow: "hidden", marginLeft: isMobile ? 0 : 240, padding: isMobile ? '60px 12px 80px' : '32px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 24, maxWidth: '100%', boxSizing: 'border-box' },
     header: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', animation: 'fadeIn 0.5s ease', flexWrap: 'wrap', gap: 10 },
     greeting: { fontSize: isMobile ? 17 : 22, fontWeight: 700, color: theme.textPrimary, marginBottom: 4 },
     dateText: { fontSize: 13, color: theme.textMuted },
@@ -213,30 +213,43 @@ const Dashboard = () => {
   };
 
   return (
-    <div style={{...s.page, paddingTop: 56}}>
-      <Navbar />
+    <div style={{...s.page, paddingTop: 64}}>
+      <PageHeader />
       <Sidebar activePath="/dashboard" courseId={resolvedCourseId} />
 
       <main style={s.main}>
-        <header style={s.header}>
-          <div>
-            <div style={s.greeting}>{greetingIcon()} {greeting()}, {user?.name?.split(' ')[0] || 'Student'}</div>
-            <div style={s.dateText}>{formatDate(time)}</div>
-          </div>
-          <div style={s.headerRight}>
-            {/* 🌙 Dark / Light toggle */}
-            <button
-              style={s.toggleBtn}
-              onClick={toggleTheme}
-              title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            >
-              {isDark ? '☀️' : '🌙'}
-            </button>
-            <div style={s.clockContainer}>
-              <div style={s.clock}>{formatTime(time)}</div>
+        {/* ── WELCOME BANNER ── */}
+        <div style={{
+          background: 'linear-gradient(135deg, #061a14 0%, #0a2d24 45%, #0d3d2e 100%)',
+          borderRadius: 20, padding: isMobile ? '24px 20px' : '32px 36px',
+          marginBottom: 24, position: 'relative', overflow: 'hidden',
+        }}>
+          <div style={{ position:'absolute', top:-40, right:-40, width:180, height:180, borderRadius:'50%', background:'rgba(0,212,170,0.12)', pointerEvents:'none' }} />
+          <div style={{ position:'absolute', bottom:-30, right:120, width:120, height:120, borderRadius:'50%', background:'rgba(124,106,245,0.1)', pointerEvents:'none' }} />
+          <div style={{ position:'relative', zIndex:1 }}>
+            <div style={{ fontSize:12, fontWeight:700, color:'rgba(0,212,170,0.7)', textTransform:'uppercase', letterSpacing:2, marginBottom:6 }}>
+              {greetingIcon()} {greeting()}
+            </div>
+            <h1 style={{ fontSize: isMobile ? 22 : 28, fontWeight:800, color:'#fff', margin:'0 0 6px', lineHeight:1.2 }}>
+              Welcome back, {user?.name?.split(' ')[0] || 'Student'}! 🚀
+            </h1>
+            <p style={{ fontSize:13, color:'rgba(0,212,170,0.6)', margin:'0 0 20px' }}>
+              {formatDate(time)} — Keep up the great work!
+            </p>
+            <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
+              {[
+                { label:'Attendance', value:`${Math.round(stats.attendance)}%`, color:'#00d4aa' },
+                { label:'Present Days', value:`${stats.present}`, color:'#7c6af5' },
+                { label:'Streak', value:`${stats.streak} 🔥`, color:'#f59e0b' },
+              ].map(s => (
+                <div key={s.label} style={{ background:'rgba(255,255,255,0.07)', borderRadius:12, padding:'10px 18px', border:'1px solid rgba(255,255,255,0.1)' }}>
+                  <div style={{ fontSize:18, fontWeight:800, color:s.color }}>{s.value}</div>
+                  <div style={{ fontSize:10, color:'rgba(255,255,255,0.5)', marginTop:2, textTransform:'uppercase', letterSpacing:1 }}>{s.label}</div>
+                </div>
+              ))}
             </div>
           </div>
-        </header>
+        </div>
 
         <div style={s.statsGrid}>
           {[

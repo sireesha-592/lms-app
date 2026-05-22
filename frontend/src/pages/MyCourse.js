@@ -2,6 +2,7 @@ import Sidebar from '../components/Sidebar';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
+import PageHeader from '../components/PageHeader';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 
@@ -227,10 +228,11 @@ export default function MyCourse() {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: theme.pageBg, fontFamily: "'DM Sans', 'Segoe UI', sans-serif", overflowX: 'hidden' }}>
+      <PageHeader />
       <Sidebar activePath="/my-course" courseId={user&&user.enrolledCourse} />
 
       {/* Main */}
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', overflowY: 'auto', overflowX: 'hidden', background: theme.pageBg, position: 'relative' }}>
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', overflowY: 'auto', overflowX: 'hidden', background: theme.pageBg, position: 'relative', marginLeft: isMobile ? 0 : 240 }}>
         {/* Hero */}
         <div style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)', padding: '40px 40px 40px', position: 'relative', zIndex: 0, flexShrink: 0 }}>
           <div style={{ position: 'absolute', top: -40, right: -40, width: 200, height: 200, borderRadius: '50%', background: 'radial-gradient(circle, #7c6af520, transparent)', pointerEvents: 'none' }} />
@@ -254,7 +256,7 @@ export default function MyCourse() {
           </div>
         </div>
 
-        <div style={{ padding: isMobile ? '60px 12px 80px' : '32px 40px', display: 'flex', flexDirection: 'column', gap: 28, position: 'relative', zIndex: 1, background: theme.pageBg, boxSizing: 'border-box' }}>
+        <div style={{ padding: isMobile ? '64px 12px 80px' : '32px 40px', display: 'flex', flexDirection: 'column', gap: 28, position: 'relative', zIndex: 1, background: theme.pageBg, boxSizing: 'border-box' }}>
 
           {/* Not enrolled — show available courses */}
           {!loading && !courseInfo && !user?.enrolledCourse && (

@@ -2,6 +2,7 @@ import Sidebar from '../components/Sidebar';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import PageHeader from '../components/PageHeader';
 import { useTheme } from '../context/ThemeContext';
 import { io } from 'socket.io-client';
 import api from '../api';
@@ -238,10 +239,11 @@ export default function GroupChatPage() {
     <div style={{ display: 'flex', minHeight: '100vh', background: theme.pageBg, color: theme.textPrimary, fontFamily: "'DM Sans','Segoe UI',sans-serif" }}>
 
       {/* ── Sidebar ── */}
+      <PageHeader />
       <Sidebar activePath="/chat" courseId={courseId} />
 
       {/* ── Main Chat ── */}
-      <main style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', height: '100dvh', overflow: 'hidden', paddingTop: isMobile ? 56 : 0 }}>
+      <main style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', height: '100dvh', overflow: 'hidden', paddingTop: 64, marginLeft: isMobile ? 0 : 240 }}>
 
         {/* Header */}
         <div style={{ padding: '16px 24px', borderBottom: `1px solid ${theme.border}`, background: theme.cardBg, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
